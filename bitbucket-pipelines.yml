@@ -1,0 +1,22 @@
+image: node:18
+
+pipelines:
+  pull-requests:
+    "**":
+      - step:
+          name: Build and Deploy Storybook
+          caches:
+            - node
+          script:
+            - npm install
+            - npm run build-storybook
+          artifacts:
+            - storybook-static/**
+      - step:
+          name: Deploy to Bitbucket Pages
+          script:
+            - pipe: atlassian/bitbucket-pages-deploy:1.1.0
+              variables:
+                BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+                PAGES_DIR: "storybook-static"
